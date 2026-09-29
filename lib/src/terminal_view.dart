@@ -53,6 +53,7 @@ class TerminalView extends StatefulWidget {
     this.hardwareKeyboardOnly = false,
     this.simulateScroll = true,
     this.forceAppScrollMode = false,
+    this.showSelectionHandles = true,
   });
 
   /// The underlying terminal that this widget renders.
@@ -152,6 +153,11 @@ class TerminalView extends StatefulWidget {
 
   /// Route touch scrolling to the remote application even in the main buffer.
   final bool forceAppScrollMode;
+
+  /// Whether to draw the touch selection handles over a non-empty selection.
+  /// Apps that know the selection came from a mouse or trackpad can turn them
+  /// off; the handles only respond to touch and stylus. True by default.
+  final bool showSelectionHandles;
 
   @override
   State<TerminalView> createState() => TerminalViewState();
@@ -377,13 +383,14 @@ class TerminalViewState extends State<TerminalView> {
       clipBehavior: Clip.none,
       children: [
         Positioned.fill(child: child),
-        Positioned.fill(
-          child: TerminalSelectionHandles(
-            controller: _controller,
-            terminal: widget.terminal,
-            renderTerminal: () => _maybeRenderTerminal,
+        if (widget.showSelectionHandles)
+          Positioned.fill(
+            child: TerminalSelectionHandles(
+              controller: _controller,
+              terminal: widget.terminal,
+              renderTerminal: () => _maybeRenderTerminal,
+            ),
           ),
-        ),
       ],
     );
   }

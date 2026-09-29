@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:terminal_view/terminal_view.dart';
+import 'package:terminal_view/src/ui/selection_handles.dart';
 
 import '../_fixture/_fixture.dart';
 
@@ -469,6 +470,26 @@ void main() {
       expect(tapped, isNotNull);
       expect(tapped!.x, 0);
       expect(tapped!.y, 0);
+    });
+  });
+
+  group('TerminalView.showSelectionHandles', () {
+    testWidgets('adds the handle layer by default', (tester) async {
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(body: TerminalView(Terminal())),
+      ));
+
+      expect(find.byType(TerminalSelectionHandles), findsOneWidget);
+    });
+
+    testWidgets('leaves the handle layer out when false', (tester) async {
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+          body: TerminalView(Terminal(), showSelectionHandles: false),
+        ),
+      ));
+
+      expect(find.byType(TerminalSelectionHandles), findsNothing);
     });
   });
 }
