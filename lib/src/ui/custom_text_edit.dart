@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'text_input_delta.dart';
+import 'package:terminal_view/src/ui/text_input_delta.dart';
 
 class CustomTextEdit extends StatefulWidget {
   CustomTextEdit({
