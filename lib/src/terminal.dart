@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math' show max;
 
+import 'package:flutter/services.dart' show KeyEvent;
 import 'package:terminal_view/src/base/observable.dart';
 import 'package:terminal_view/src/core/buffer/buffer.dart';
 import 'package:terminal_view/src/core/buffer/cell_offset.dart';
@@ -307,6 +308,9 @@ class Terminal with Observable
     bool shift = false,
     bool alt = false,
     bool ctrl = false,
+    KeyEvent? source,
+    bool leftAlt = false,
+    bool rightAlt = false,
   }) {
     final output = inputHandler?.call(
       TerminalKeyboardEvent(
@@ -317,6 +321,9 @@ class Terminal with Observable
         state: this,
         altBuffer: isUsingAltBuffer,
         platform: platform,
+        source: source,
+        leftAlt: leftAlt,
+        rightAlt: rightAlt,
       ),
     );
 

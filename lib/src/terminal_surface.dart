@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart' show KeyEvent;
 import 'package:terminal_view/src/core/buffer/cell_offset.dart';
 import 'package:terminal_view/src/core/buffer/line.dart';
 import 'package:terminal_view/src/core/buffer/range.dart';
@@ -63,6 +64,9 @@ abstract class TerminalSurface {
     bool shift = false,
     bool alt = false,
     bool ctrl = false,
+    KeyEvent? source,
+    bool leftAlt = false,
+    bool rightAlt = false,
   });
 
   void textInput(String text);

@@ -519,6 +519,9 @@ class TerminalViewState extends State<TerminalView> {
     final ctrl = keyboard.isControlPressed;
     final alt = keyboard.isAltPressed;
     final shift = keyboard.isShiftPressed;
+    // Sampled now: a held key may run later, when the keyboard state has moved on.
+    final leftAlt = keyboard.physicalKeysPressed.contains(PhysicalKeyboardKey.altLeft);
+    final rightAlt = keyboard.physicalKeysPressed.contains(PhysicalKeyboardKey.altRight);
 
     // Plain text keys go through the platform's text input, so IMEs can
     // compose with them and the character keeps its case and layout. The
@@ -537,7 +540,15 @@ class TerminalViewState extends State<TerminalView> {
     // A key typed right after some text must not overtake it.
     if (_keyOrder.isBusy) {
       _keyOrder.run(() {
-        widget.terminal.keyInput(key, ctrl: ctrl, alt: alt, shift: shift);
+        widget.terminal.keyInput(
+          key,
+          ctrl: ctrl,
+          alt: alt,
+          shift: shift,
+          source: event,
+          leftAlt: leftAlt,
+          rightAlt: rightAlt,
+        );
         _scrollToBottom();
       });
       return KeyEventResult.handled;
@@ -548,6 +559,9 @@ class TerminalViewState extends State<TerminalView> {
       ctrl: ctrl,
       alt: alt,
       shift: shift,
+      source: event,
+      leftAlt: leftAlt,
+      rightAlt: rightAlt,
     );
 
     if (handled) {

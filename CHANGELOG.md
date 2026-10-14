@@ -1,3 +1,7 @@
+## [Unreleased]
+
+* Add TerminalKeyboardEvent.source, leftAlt and ightAlt, so an inputHandler can tell which hardware key (and which Alt) triggered an event. Terminal.keyInput takes the same optional arguments.
+
 ## [0.2.1] - 2026-09-19
 
 * Flush output held by synchronized update mode (DEC 2026) when nothing turns it off.

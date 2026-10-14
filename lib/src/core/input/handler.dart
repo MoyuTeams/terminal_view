@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart' show KeyEvent;
 import 'package:terminal_view/src/core/input/keys.dart';
 import 'package:terminal_view/src/core/input/keytab/keytab.dart';
 import 'package:terminal_view/src/core/state.dart';
@@ -25,6 +26,18 @@ class TerminalKeyboardEvent {
 
   final TerminalTargetPlatform platform;
 
+  /// The hardware key event that triggered this event, or null when the event
+  /// was synthesized by software (for example by [Terminal.keyInput] called
+  /// directly). Gives access to the physical key and whether it is a repeat.
+  final KeyEvent? source;
+
+  /// Whether the left Alt key was held when [source] arrived. Sampled at that
+  /// moment, so it stays correct even if the event is delivered later.
+  final bool leftAlt;
+
+  /// Whether the right Alt key was held when [source] arrived.
+  final bool rightAlt;
+
   TerminalKeyboardEvent({
     required this.key,
     required this.shift,
@@ -33,6 +46,9 @@ class TerminalKeyboardEvent {
     required this.state,
     required this.altBuffer,
     required this.platform,
+    this.source,
+    this.leftAlt = false,
+    this.rightAlt = false,
   });
 
   TerminalKeyboardEvent copyWith({
@@ -43,6 +59,9 @@ class TerminalKeyboardEvent {
     TerminalState? state,
     bool? altBuffer,
     TerminalTargetPlatform? platform,
+    KeyEvent? source,
+    bool? leftAlt,
+    bool? rightAlt,
   }) {
     return TerminalKeyboardEvent(
       key: key ?? this.key,
@@ -52,12 +71,15 @@ class TerminalKeyboardEvent {
       state: state ?? this.state,
       altBuffer: altBuffer ?? this.altBuffer,
       platform: platform ?? this.platform,
+      source: source ?? this.source,
+      leftAlt: leftAlt ?? this.leftAlt,
+      rightAlt: rightAlt ?? this.rightAlt,
     );
   }
 
   @override
   String toString() {
-    return 'TerminalKeyboardEvent(key: $key, shift: $shift, ctrl: $ctrl, alt: $alt, state: $state, altBuffer: $altBuffer, platform: $platform)';
+    return 'TerminalKeyboardEvent(key: $key, shift: $shift, ctrl: $ctrl, alt: $alt, state: $state, altBuffer: $altBuffer, platform: $platform, leftAlt: $leftAlt, rightAlt: $rightAlt, source: $source)';
   }
 }
 

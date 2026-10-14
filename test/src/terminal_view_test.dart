@@ -394,6 +394,56 @@ void main() {
       expect(terminalOutput.join(), '\x04');
     });
 
+    testWidgets('tells the left Alt from the right Alt', (tester) async {
+      final events = <TerminalKeyboardEvent>[];
+      final terminal = Terminal(inputHandler: _RecordingInputHandler(events));
+
+      await tester.pumpWidget(MaterialApp(
+        home: TerminalView(terminal, autofocus: true),
+      ));
+
+      await tester.tap(find.byType(TerminalView));
+      await tester.pump(Duration(seconds: 1));
+
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.altLeft);
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.keyX);
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.keyX);
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.altLeft);
+
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.altRight);
+      await tester.sendKeyDownEvent(LogicalKeyboardKey.keyX);
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.keyX);
+      await tester.sendKeyUpEvent(LogicalKeyboardKey.altRight);
+
+      await tester.pumpAndSettle();
+
+      // The Alt keys themselves are reported too; look at the x presses.
+      final xs = events.where((e) => e.key == TerminalKey.keyX).toList();
+      expect(xs, hasLength(2));
+
+      expect(xs[0].alt, isTrue);
+      expect(xs[0].leftAlt, isTrue);
+      expect(xs[0].rightAlt, isFalse);
+      expect(xs[0].source, isA<KeyDownEvent>());
+      expect(xs[0].source!.logicalKey, LogicalKeyboardKey.keyX);
+      expect(xs[0].source!.physicalKey, PhysicalKeyboardKey.keyX);
+
+      expect(xs[1].alt, isTrue);
+      expect(xs[1].leftAlt, isFalse);
+      expect(xs[1].rightAlt, isTrue);
+    });
+
+    test('software key input has no source and no side-specific Alt', () {
+      final events = <TerminalKeyboardEvent>[];
+      final terminal = Terminal(inputHandler: _RecordingInputHandler(events));
+
+      terminal.keyInput(TerminalKey.keyX, alt: true);
+
+      expect(events.single.source, isNull);
+      expect(events.single.leftAlt, isFalse);
+      expect(events.single.rightAlt, isFalse);
+    });
+
     testWidgets('can convert text input to key events', (tester) async {
       final inputHandler = MockTerminalInputHandler();
       when(inputHandler.call(any)).thenAnswer((invocation) => 'AAA');
@@ -492,4 +542,16 @@ void main() {
       expect(find.byType(TerminalSelectionHandles), findsNothing);
     });
   });
+}
+
+class _RecordingInputHandler implements TerminalInputHandler {
+  _RecordingInputHandler(this.events);
+
+  final List<TerminalKeyboardEvent> events;
+
+  @override
+  String? call(TerminalKeyboardEvent event) {
+    events.add(event);
+    return null;
+  }
 }
